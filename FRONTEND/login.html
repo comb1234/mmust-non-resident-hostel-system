@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login - MMUST Hostels</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="css/auth.css"/>
+    <link rel="stylesheet" href="css/forms.css"/>
+    <link rel="stylesheet" href="css/responsive.css"/>
+</head>
+<body class="auth-body">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <a href="index.html" class="auth-back"><i class="fas fa-arrow-left"></i> Back to Home</a>
+                <div class="auth-logo">
+                    <img src="assets/images/mmust-logo.svg" alt="MMUST Logo" />
+                    <div>
+                        <h1>MMUST Hostels</h1>
+                    </div>
+                </div>
+                <div id="loginModeHint" style="margin-top:8px;font-size:13px;color:#666">Checking connection…</div>
+                <h2>Welcome Back!</h2>
+                <p>Login to manage your hostel bookings</p>
+            </div>
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail"><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required />
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword"><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required />
+                </div>
+                <div id="loginError" class="error-message" style="display:none;"></div>
+                <button type="submit" class="btn-primary btn-block btn-lg"><i class="fas fa-sign-in-alt"></i> Login</button>
+            </form>
+            <div class="auth-footer"><p>Don't have an account? <a href="register.html">Register here</a></p></div>
+        </div>
+    </div>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Show online/offline/backend reachability status on login page
+        (function showLoginMode() {
+            const hint = document.getElementById('loginModeHint');
+            if (!hint) return;
+            try {
+                if (location.protocol === 'file:') {
+                    hint.textContent = 'Offline mode (opened via file://). Some features use local mock data.';
+                    hint.style.color = '#b36b00';
+                    return;
+                }
+            } catch (e) {}
+            // Probe a known API endpoint (hostels) instead of the API root which may not exist
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 2500);
+            // derive probe URL: try API host + /api/hostels/
+            const apiHost = API_BASE_URL.replace(/\/api\/?$/, '');
+            const probeUrl = apiHost + '/api/hostels/';
+            fetch(probeUrl, { method: 'GET', signal: controller.signal })
+                .then(resp => {
+                    clearTimeout(timeout);
+                    if (resp.ok) {
+                        hint.textContent = 'Online — backend reachable';
+                        hint.style.color = '#117a37';
+                    } else {
+                        hint.textContent = `Online — backend responded ${resp.status} at probe endpoint`;
+                        hint.style.color = '#a61b1b';
+                    }
+                })
+                .catch(err => {
+                    clearTimeout(timeout);
+                    hint.textContent = `Online — backend unreachable at ${apiHost}`;
+                    hint.style.color = '#a61b1b';
+                });
+        })();
+    </script>
+    <script>
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            // Validate email domain
+            if (!email.endsWith('@student.mmust.ac.ke') && email !== 'admin@mmust.ac.ke') {
+                document.getElementById('loginError').textContent = 'Please use a valid MMUST student email or admin email.';
+                document.getElementById('loginError').style.display = 'block';
+                return;
+            }
+            const result = await Auth.login(email, password);
+            if (result.success) {
+                window.location.href = result.role === 'admin' ? 'admin/dashboard.html' : 'student/dashboard.html';
+            } else {
+                document.getElementById('loginError').textContent = result.message;
+                document.getElementById('loginError').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

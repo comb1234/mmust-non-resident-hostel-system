@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Student Dashboard - MMUST Hostels</title>
+    <!-- Fonts and icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/style.css"/>
+    <link rel="stylesheet" href="../css/dashboard.css"/>
+    <link rel="stylesheet" href="../css/student.css"/>
+    <link rel="stylesheet" href="../css/responsive.css"/>
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <!-- Sidebar navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand"><i class="fas fa-building-columns"></i> MMUST Hostels</div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="profile.html"><i class="fas fa-user"></i> My Profile</a></li>
+                <li><a href="hostels.html"><i class="fas fa-building"></i> Browse Hostels</a></li>
+                <li><a href="bookings.html"><i class="fas fa-calendar-check"></i> My Bookings</a></li>
+                <li><a href="payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                <li><a href="complaints.html"><i class="fas fa-exclamation-circle"></i> Complaints</a></li>
+                <li><a href="maintenance.html"><i class="fas fa-tools"></i> Maintenance</a></li>
+                <li><a href="announcements.html"><i class="fas fa-bullhorn"></i> Announcements</a></li>
+                <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main content area -->
+        <main class="main-content">
+            <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+            <div class="page-header">
+                <h1>Welcome, <span id="studentName"></span>!</h1>
+                <a href="hostels.html" class="btn-primary"><i class="fas fa-search"></i> Find Hostel</a>
+            </div>
+
+            <!-- Stats cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div class="stat-card-info"><h3 id="activeBookings">0</h3><p>Active Bookings</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon"><i class="fas fa-credit-card"></i></div>
+                    <div class="stat-card-info"><h3 id="pendingPayments">0</h3><p>Pending Payments</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon"><i class="fas fa-exclamation-circle"></i></div>
+                    <div class="stat-card-info"><h3 id="openComplaints">0</h3><p>Open Complaints</p></div>
+                </div>
+            </div>
+
+            <!-- Recent announcements -->
+            <div class="card">
+                <div class="card-header"><span class="card-title">Recent Announcements</span><a href="announcements.html">View all</a></div>
+                <div id="recentAnnouncements"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Verify authentication and role
+            const user = await Auth.getCurrentUser();
+            if (!user || user.role !== 'student') {
+                window.location.href = '../login.html';
+                return;
+            }
+            document.getElementById('studentName').textContent = user.first_name || user.username;
+
+            // Load stats and announcements in parallel
+            try {
+                const [bookings, payments, complaints, announcements] = await Promise.all([
+                    API.getBookings(),
+                    API.getPayments(),
+                    API.getComplaints(),
+                    API.getAnnouncements(),
+                ]);
+                const activeBookings = bookings.filter(b => b.status === 'confirmed' || b.status === 'pending');
+                document.getElementById('activeBookings').textContent = activeBookings.length;
+                document.getElementById('pendingPayments').textContent = payments.filter(p => p.status === 'pending').length;
+                document.getElementById('openComplaints').textContent = complaints.filter(c => c.status === 'open').length;
+                const container = document.getElementById('recentAnnouncements');
+                container.innerHTML = '';
+                announcements.slice(0, 3).forEach(ann => {
+                    container.innerHTML += `<div style="margin-bottom:10px;"><strong>${ann.title}</strong> <small>(${ann.created_at?.slice(0,10)})</small><br>${ann.content}</div>`;
+                });
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+            }
+        });
+    </script>
+</body>
+</html>

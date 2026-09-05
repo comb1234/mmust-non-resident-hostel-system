@@ -1,0 +1,9 @@
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .nav-links { display: none; flex-direction: column; position: absolute; top: 70px; left: 0; right: 0; background: var(--white); box-shadow: var(--shadow); padding: 20px; }
+    .nav-links.active { display: flex; }
+    .nav-toggle { display: block; }
+    .hero h1 { font-size: 2rem; }
+    .hero-stats { flex-wrap: wrap; gap: 20px; }
+    .hero-buttons { flex-direction: column; }
+}

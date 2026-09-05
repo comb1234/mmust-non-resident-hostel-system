@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "name": "Lurambi Hostel",
+    "slug": "lurambi-hostel",
+    "rooms_available": 20,
+    "description": "Comfortable, secure hostel near campus.",
+    "images": [
+      "assets/images/hostels/lurambi-outside.jpg",
+      "assets/images/hostels/lurambi-hall.jpg",
+      "assets/images/hostels/lurambi-room.jpg"
+    ],
+    "price": 4500
+  },
+  {
+    "id": 2,
+    "name": "Sichirai Hostel",
+    "slug": "sichirai-hostel",
+    "rooms_available": 18,
+    "description": "Affordable rooms with great community.",
+    "images": [
+      "assets/images/hostels/sichirai-outside.jpg",
+      "assets/images/hostels/sichirai-hall.jpg",
+      "assets/images/hostels/sichirai-room.jpg"
+    ],
+    "price": 4000
+  },
+  {
+    "id": 3,
+    "name": "Kefinco Hostel",
+    "slug": "kefinco-hostel",
+    "rooms_available": 15,
+    "description": "Well-located with good amenities.",
+    "images": [
+      "assets/images/hostels/kefinco-outside.jpg",
+      "assets/images/hostels/kefinco-hall.jpg",
+      "assets/images/hostels/kefinco-room.jpg"
+    ],
+    "price": 4800
+  }
+]

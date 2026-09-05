@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Bookings - MMUST</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" href="../css/style.css"/>
+    <link rel="stylesheet" href="../css/dashboard.css"/>
+    <link rel="stylesheet" href="../css/student.css"/>
+    <link rel="stylesheet" href="../css/tables.css"/>
+    <link rel="stylesheet" href="../css/responsive.css"/>
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand"><i class="fas fa-building-columns"></i> MMUST Hostels</div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="profile.html"><i class="fas fa-user"></i> My Profile</a></li>
+                <li><a href="hostels.html"><i class="fas fa-building"></i> Browse Hostels</a></li>
+                <li><a href="bookings.html" class="active"><i class="fas fa-calendar-check"></i> My Bookings</a></li>
+                <li><a href="payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                <li><a href="complaints.html"><i class="fas fa-exclamation-circle"></i> Complaints</a></li>
+                <li><a href="maintenance.html"><i class="fas fa-tools"></i> Maintenance</a></li>
+                <li><a href="announcements.html"><i class="fas fa-bullhorn"></i> Announcements</a></li>
+                <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+            <div class="page-header"><h1>My Bookings</h1></div>
+            <div class="card">
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Booking ID</th><th>Hostel</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+                        <tbody id="bookingsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Load user's bookings
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!Auth.isLoggedIn()) window.location.href = '../login.html';
+            try {
+                const bookings = await API.getBookings();
+                const tbody = document.getElementById('bookingsTable');
+                if (bookings.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No bookings found.</td></tr>';
+                } else {
+                    bookings.forEach(b => {
+                        const statusClass = b.status === 'confirmed' ? 'badge-success' : b.status === 'pending' ? 'badge-warning' : 'badge-danger';
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${b.id}</td>
+                                <td>${b.hostel_name || 'Unknown'}</td>
+                                <td><span class="badge ${statusClass}">${b.status}</span></td>
+                                <td>${new Date(b.created_at).toLocaleDateString()}</td>
+                                <td><a href="booking-details.html?id=${b.id}" class="btn-sm btn-primary">View</a></td>
+                            </tr>
+                        `;
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to load bookings:', error);
+            }
+        });
+    </script>
+</body>
+</html>

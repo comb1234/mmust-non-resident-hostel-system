@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MMUST Non-Resident Hostel Management System</title>
+    <!-- Fonts and icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="css/responsive.css"/>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="mainNavbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="assets/images/mmust_logo.png" alt="MMUST logo" class="nav-logo"/>
+                <div class="brand-text"><span class="brand-title">MMUST Hostels</span><span class="brand-sub">Non-Resident Accommodation</span></div>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="student/hostels.html">Hostels</a></li>
+                <li><a href="login.html" class="btn-nav">Login</a></li>
+                <li><a href="register.html" class="btn-nav btn-nav-outline">Register</a></li>
+            </ul>
+            <div class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-badge"><i class="fas fa-star"></i> Trusted by MMUST Students</div>
+            <h1>Find Trusted Off-Campus Hostels Near MMUST</h1>
+            <p class="hero-subtitle">Secure, affordable, and comfortable accommodation for non-resident students — verified hostels, simple booking and secure payments.</p>
+            <div class="hero-buttons">
+                <a href="student/hostels.html" class="btn-primary btn-lg"><i class="fas fa-search"></i> Browse Hostels</a>
+                <a href="register.html" class="btn-secondary btn-lg"><i class="fas fa-user-plus"></i> Create Account</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item"><span class="stat-number" id="statHostels">3+</span><span class="stat-label">Hostels Listed</span></div>
+                <div class="stat-item"><span class="stat-number" id="statRooms">50+</span><span class="stat-label">Rooms Available</span></div>
+                <div class="stat-item"><span class="stat-number">98%</span><span class="stat-label">Satisfaction Rate</span></div>
+                <div class="stat-item"><span class="stat-number">24/7</span><span class="stat-label">Support</span></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features -->
+    <section class="features-section">
+        <div class="container">
+            <div class="section-header"><h2>Why Choose Our Platform?</h2><p>Everything you need for hassle-free hostel booking</p></div>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><h3>Verified Hostels</h3><p>All hostels verified by university administration.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-credit-card"></i></div><h3>Easy Payments</h3><p>Pay securely via M-PESA, bank transfer, or card.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-calendar-check"></i></div><h3>Real-time Booking</h3><p>Check availability and book instantly.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-headset"></i></div><h3>24/7 Support</h3><p>Dedicated support team always available.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-map-marker-alt"></i></div><h3>Prime Locations</h3><p>Hostels within walking distance to campus.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-users"></i></div><h3>Community Reviews</h3><p>Honest reviews from fellow students.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col"><h3><i class="fas fa-building-columns"></i> MMUST Hostels</h3><p>Your trusted platform for off-campus accommodation.</p></div>
+                <div class="footer-col"><h4>Quick Links</h4><a href="student/hostels.html">Browse Hostels</a><a href="login.html">Login</a><a href="register.html">Register</a></div>
+                <div class="footer-col"><h4>Contact</h4><p><i class="fas fa-envelope"></i> hostels@mmust.ac.ke</p><p><i class="fas fa-phone"></i> +254 700 123 456</p></div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2025 MMUST Non-Resident Hostel Management System</p></div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Fetch hostel count and update stats
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const hostels = await API.getHostels();
+                document.getElementById('statHostels').textContent = hostels.length + '+';
+                const totalRooms = hostels.reduce((sum, h) => sum + h.rooms_available, 0);
+                document.getElementById('statRooms').textContent = totalRooms + '+';
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+/* Forms */
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: 500; color: var(--dark); }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: var(--radius); font-family: inherit; font-size: 1rem; transition: var(--transition); }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,82,118,0.1); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.form-group textarea { min-height: 120px; resize: vertical; }
+@media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }

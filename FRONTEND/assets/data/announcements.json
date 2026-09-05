@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "title": "Welcome Students",
+    "body": "New hostel listings have been added for the upcoming semester.",
+    "date": "2026-09-01"
+  },
+  {
+    "id": 2,
+    "title": "Payment Window",
+    "body": "Payments for October are due by the 25th of September.",
+    "date": "2026-09-03"
+  }
+]
