@@ -6,6 +6,7 @@ const Auth = {
             const user = await API.register({
                 email: data.email,
                 password: data.password,
+                password2: data.password2,
                 first_name: data.fullName.split(' ')[0],
                 last_name: data.fullName.split(' ').slice(1).join(' '),
                 registration_number: data.regNumber,
