@@ -1,3 +1,17 @@
+function resolveHostelImage(image) {
+    if (!image) return '../assets/images/hostel-placeholder.jpg';
+    if (image.startsWith('/static/assets/images/hostels/')) {
+        const filename = image.split('/').pop();
+        return filename ? `../assets/images/hostels/${filename}` : '../assets/images/hostel-placeholder.jpg';
+    }
+    if (image.startsWith('/static/assets/images/')) {
+        const filename = image.split('/').pop();
+        return filename ? `../assets/images/${filename}` : '../assets/images/hostel-placeholder.jpg';
+    }
+    if (/^(https?:)?\/\//.test(image) || image.startsWith('/')) return image;
+    return image.startsWith('../') ? image : `../${image}`;
+}
+
 // Function to display hostel cards in a container, supports multiple images
 function displayHostels(containerId, hostels) {
     const container = document.getElementById(containerId);
@@ -6,14 +20,14 @@ function displayHostels(containerId, hostels) {
     hostels.forEach(hostel => {
         // Get main image (first in images list) or fallback
         const images = hostel.images || [];
-        const mainImage = images.length > 0 ? images[0] : (hostel.image || '../assets/images/hostel-placeholder.jpg');
+        const mainImage = resolveHostelImage(images.length > 0 ? images[0] : hostel.image);
         const card = document.createElement('div');
         card.className = 'hostel-card';
         card.innerHTML = `
             <div class="hostel-image-wrap">
                 <img src="${mainImage}" alt="${hostel.name}" class="hostel-image" />
                 <div class="mini-gallery">
-                    ${[0,1,2].map(i => `<img src="${images[i] || mainImage}" alt="${hostel.name} photo ${i+1}"/>`).join('')}
+                    ${[0,1,2].map(i => `<img src="${resolveHostelImage(images[i] || mainImage)}" alt="${hostel.name} photo ${i+1}"/>`).join('')}
                 </div>
             </div>
             <div class="hostel-info">
@@ -36,7 +50,7 @@ const FALLBACK_HOSTELS = [
         location: 'Lurambi, Kakamega',
         price_per_semester: '12000.00',
         rating: 4.2,
-        images: ['assets/images/lurambi.jpg','assets/images/lurambi.jpg','assets/images/lurambi.jpg'],
+        images: ['../assets/images/lurambi.svg','../assets/images/lurambi.svg','../assets/images/lurambi.svg'],
         description: 'Affordable and secure hostel located in Lurambi area, just 1 km from MMUST main gate.',
         amenities: ['Wi-Fi','Water','Electricity','Security'],
         gender: 'Mixed', rooms_available: 15, total_rooms:20
@@ -47,7 +61,7 @@ const FALLBACK_HOSTELS = [
         location: 'Sichirai, Kakamega',
         price_per_semester: '18000.00',
         rating: 4.5,
-        images: ['assets/images/sichirai.jpg','assets/images/sichirai.jpg','assets/images/sichirai.jpg'],
+        images: ['../assets/images/sichirai.svg','../assets/images/sichirai.svg','../assets/images/sichirai.svg'],
         description: 'Modern hostel in the quiet Sichirai neighbourhood.',
         amenities: ['Wi-Fi','Water','Electricity','Security','Cafeteria'],
         gender: 'Female', rooms_available:8, total_rooms:12
@@ -58,7 +72,7 @@ const FALLBACK_HOSTELS = [
         location: 'Kefinco, Kakamega',
         price_per_semester: '10000.00',
         rating: 3.9,
-        images: ['assets/images/kefinco.jpg','assets/images/kefinco.jpg','assets/images/kefinco.jpg'],
+        images: ['../assets/images/kefinco.svg','../assets/images/kefinco.svg','../assets/images/kefinco.svg'],
         description: 'Budget-friendly hostel located near Kefinco.',
         amenities: ['Water','Electricity','Security'],
         gender: 'Male', rooms_available:20, total_rooms:25

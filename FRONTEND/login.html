@@ -22,7 +22,9 @@
                         <h1>MMUST Hostels</h1>
                     </div>
                 </div>
-                <div id="loginModeHint" style="margin-top:8px;font-size:13px;color:#666">Checking connection…</div>
+                <div class="backend-status" aria-label="Checking backend connection">
+                    <span id="loginModeHint" class="status-dot" title="Checking backend connection"></span>
+                </div>
                 <h2>Welcome Back!</h2>
                 <p>Login to manage your hostel bookings</p>
             </div>
@@ -52,8 +54,8 @@
             if (!hint) return;
             try {
                 if (location.protocol === 'file:') {
-                    hint.textContent = 'Offline mode (opened via file://). Some features use local mock data.';
-                    hint.style.color = '#b36b00';
+                    hint.classList.add('offline');
+                    hint.title = 'Backend unavailable in offline mode';
                     return;
                 }
             } catch (e) {}
@@ -67,17 +69,17 @@
                 .then(resp => {
                     clearTimeout(timeout);
                     if (resp.ok) {
-                        hint.textContent = 'Online — backend reachable';
-                        hint.style.color = '#117a37';
+                        hint.classList.add('online');
+                        hint.title = 'Backend reachable';
                     } else {
-                        hint.textContent = `Online — backend responded ${resp.status} at probe endpoint`;
-                        hint.style.color = '#a61b1b';
+                        hint.classList.add('offline');
+                        hint.title = `Backend responded with status ${resp.status}`;
                     }
                 })
                 .catch(err => {
                     clearTimeout(timeout);
-                    hint.textContent = `Online — backend unreachable at ${apiHost}`;
-                    hint.style.color = '#a61b1b';
+                    hint.classList.add('offline');
+                    hint.title = 'Backend unreachable';
                 });
         })();
     </script>

@@ -8,8 +8,11 @@ class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = ['id', 'booking', 'booking_details', 'student', 'student_name',
-                  'amount', 'payment_method', 'transaction_id', 'status', 'created_at', 'updated_at']
-        read_only_fields = ['student', 'created_at', 'updated_at']
+              'amount', 'payment_method', 'transaction_id', 'phone_number',
+              'checkout_request_id', 'result_description', 'status', 'created_at', 'updated_at']
+        read_only_fields = ['student', 'transaction_id', 'phone_number',
+                    'checkout_request_id', 'result_description', 'status',
+                    'created_at', 'updated_at']
 
     def create(self, validated_data):
         validated_data['student'] = self.context['request'].user

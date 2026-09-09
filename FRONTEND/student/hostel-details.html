@@ -42,7 +42,7 @@
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/main.js"></script>
-    <script src="../js/hostels.js"></script>
+    <script src="../js/hostels.js?v=4"></script>
     <script>
         // Fetch and display hostel details with image gallery
         document.addEventListener('DOMContentLoaded', async () => {
@@ -60,13 +60,16 @@
                     if(!hostel) throw err;
                 }
                 const images = hostel.images || [];
-                const mainImage = images.length > 0 ? images[0] : (hostel.image || '../assets/images/hostel-placeholder.jpg');
+                const mainImage = resolveHostelImage(images.length > 0 ? images[0] : hostel.image);
                 const detailsDiv = document.getElementById('hostelDetails');
                 detailsDiv.innerHTML = `
                     <div class="card">
                         <img src="${mainImage}" class="main-image" id="mainImage" />
                         <div class="image-gallery" id="gallery">
-                            ${images.map((img, i) => `<img src="${img}" onclick="document.getElementById('mainImage').src='${img}'" />`).join('')}
+                            ${images.map((img, i) => {
+                                const imageUrl = resolveHostelImage(img);
+                                return `<img src="${imageUrl}" onclick="document.getElementById('mainImage').src='${imageUrl}'" />`;
+                            }).join('')}
                         </div>
                         <h1>${hostel.name}</h1>
                         <div class="hostel-meta">
@@ -92,12 +95,24 @@
         async function bookHostel(hostelId) {
             const user = await Auth.getCurrentUser();
             if (!user) { window.location.href = '../login.html'; return; }
+            if (!user.phone) {
+                alert('Add your registered phone number in your profile before booking.');
+                return;
+            }
             try {
-                await API.createBooking({ hostel: hostelId, status: 'pending', semester: '2025-2026' });
-                alert('Booking request submitted!');
+                const booking = await API.createBooking({ hostel: hostelId, semester: '2025-2026' });
+                const payment = await API.initiateStkPush(booking.id, user.phone);
+                const approved = confirm(`${payment.message}\n\nPress OK to simulate entering your M-Pesa PIN, or Cancel to leave it pending.`);
+                if (!approved) {
+                    alert('Payment is still pending. You can retry it from the payment record.');
+                    window.location.href = 'payments.html';
+                    return;
+                }
+                const completed = await API.completeMockStkPayment(payment.payment.id);
+                alert(`${completed.message}\nTransaction: ${completed.payment.transaction_id}`);
                 window.location.href = 'bookings.html';
             } catch (error) {
-                alert('Failed to book: ' + error.message);
+                alert('Booking or payment failed: ' + error.message);
             }
         }
     </script>

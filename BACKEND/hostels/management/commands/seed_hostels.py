@@ -17,9 +17,9 @@ class Command(BaseCommand):
                 'gender': 'Mixed',
                 'amenities': ['Wi-Fi', 'Water', 'Electricity', 'Security'],
                 'images': [
-                    '/static/assets/images/lurambi.jpg',
-                    '/static/assets/images/lurambi.jpg',
-                    '/static/assets/images/lurambi.jpg',
+                    '/static/assets/images/hostels/lurambi-outside.jpg',
+                    '/static/assets/images/hostels/lurambi-hall.jpg',
+                    '/static/assets/images/hostels/lurambi-room.jpg',
                 ],
                 'rating': 4.2,
                 'contact': '+254700111333',
@@ -35,9 +35,9 @@ class Command(BaseCommand):
                 'gender': 'Female',
                 'amenities': ['Wi-Fi', 'Water', 'Electricity', 'Security', 'Cafeteria'],
                 'images': [
-                    '/static/assets/images/sichirai.jpg',
-                    '/static/assets/images/sichirai.jpg',
-                    '/static/assets/images/sichirai.jpg',
+                    '/static/assets/images/hostels/sichirai-outside.jpg',
+                    '/static/assets/images/hostels/sichirai-hall.jpg',
+                    '/static/assets/images/hostels/sichirai-room.jpg',
                 ],
                 'rating': 4.5,
                 'contact': '+254722444555',
@@ -53,9 +53,9 @@ class Command(BaseCommand):
                 'gender': 'Male',
                 'amenities': ['Water', 'Electricity', 'Security'],
                 'images': [
-                    '/static/assets/images/kefinco.jpg',
-                    '/static/assets/images/kefinco.jpg',
-                    '/static/assets/images/kefinco.jpg',
+                    '/static/assets/images/hostels/kefinco-outside.jpg',
+                    '/static/assets/images/hostels/kefinco-hall.jpg',
+                    '/static/assets/images/hostels/kefinco-room.jpg',
                 ],
                 'rating': 3.9,
                 'contact': '+254733666777',
@@ -63,8 +63,8 @@ class Command(BaseCommand):
         ]
 
         for data in hostels_data:
-            hostel, created = Hostel.objects.get_or_create(name=data['name'], defaults=data)
+            hostel, created = Hostel.objects.update_or_create(name=data['name'], defaults=data)
             if created:
                 self.stdout.write(self.style.SUCCESS(f'Created hostel: {hostel.name}'))
             else:
-                self.stdout.write(self.style.WARNING(f'Hostel already exists: {hostel.name}'))
+                self.stdout.write(self.style.SUCCESS(f'Updated hostel: {hostel.name}'))

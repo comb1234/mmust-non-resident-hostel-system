@@ -33,7 +33,7 @@
             <div class="page-header"><h1>All Payments</h1></div>
             <div class="card">
                 <div class="table-container">
-                    <table><thead><tr><th>ID</th><th>Student</th><th>Booking</th><th>Amount</th><th>Status</th></tr></thead><tbody id="paymentsTable"></tbody></table>
+                    <table><thead><tr><th>ID</th><th>Student</th><th>Booking</th><th>Amount</th><th>Phone</th><th>Reference</th><th>Status</th><th>Date</th></tr></thead><tbody id="paymentsTable"></tbody></table>
                 </div>
             </div>
         </main>
@@ -52,7 +52,7 @@
                 tbody.innerHTML = '';
                 payments.forEach(p => {
                     const statusClass = p.status === 'completed' ? 'badge-success' : p.status === 'pending' ? 'badge-warning' : 'badge-danger';
-                    tbody.innerHTML += `<tr><td>${p.id}</td><td>${p.student_name || 'Unknown'}</td><td>${p.booking_details || 'Unknown'}</td><td>KSh ${p.amount}</td><td><span class="badge ${statusClass}">${p.status}</span></td></tr>`;
+                    tbody.innerHTML += `<tr><td>${p.id}</td><td>${p.student_name || 'Unknown'}</td><td>${p.booking_details || 'Unknown'}</td><td>KSh ${p.amount}</td><td>${p.phone_number || '-'}</td><td>${p.transaction_id || p.checkout_request_id || '-'}</td><td><span class="badge ${statusClass}">${p.status}</span></td><td>${new Date(p.created_at).toLocaleDateString()}</td></tr>`;
                 });
             } catch (error) { console.error('Failed to load payments:', error); }
         });

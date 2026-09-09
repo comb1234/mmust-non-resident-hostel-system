@@ -15,6 +15,10 @@
 .auth-logo { font-size: 2rem; color: var(--primary); margin-bottom: 10px; display:flex; align-items:center; justify-content:center; gap:10px; }
 .auth-logo img { width:56px; height:56px; object-fit:contain; border-radius:8px; }
 .auth-logo i { font-size: 2.6rem; }
+.backend-status { display: flex; justify-content: center; margin-top: 8px; min-height: 10px; }
+.status-dot { display: block; width: 10px; height: 10px; border-radius: 50%; background: #9ca3af; }
+.status-dot.online { background: #16a34a; }
+.status-dot.offline { background: #dc2626; }
 .auth-header h2 { font-size: 1.8rem; margin-bottom: 5px; }
 .auth-header p { color: #666; }
 .auth-form { margin-bottom: 20px; }

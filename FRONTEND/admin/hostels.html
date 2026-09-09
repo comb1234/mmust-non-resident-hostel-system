@@ -36,6 +36,33 @@
                     <table><thead><tr><th>ID</th><th>Name</th><th>Location</th><th>Price</th><th>Rooms</th><th>Action</th></tr></thead><tbody id="hostelsTable"></tbody></table>
                 </div>
             </div>
+            <div class="admin-modal" id="hostelModal" hidden>
+                <div class="admin-modal-content" role="dialog" aria-modal="true" aria-labelledby="hostelModalTitle">
+                    <div class="admin-modal-header">
+                        <h2 id="hostelModalTitle">Edit Hostel</h2>
+                        <button type="button" class="modal-close" id="closeHostelModal" aria-label="Close">&times;</button>
+                    </div>
+                    <form id="hostelForm" class="admin-form">
+                        <input type="hidden" id="hostelId" />
+                        <label>Name<input id="hostelName" required /></label>
+                        <label>Location<input id="hostelLocation" required /></label>
+                        <label>Description<textarea id="hostelDescription" rows="3" required></textarea></label>
+                        <div class="admin-form-grid">
+                            <label>Distance<input id="hostelDistance" required /></label>
+                            <label>Gender<select id="hostelGender"><option>Male</option><option>Female</option><option>Mixed</option></select></label>
+                            <label>Price per semester<input id="hostelPrice" type="number" min="0" step="0.01" required /></label>
+                            <label>Rooms available<input id="hostelRooms" type="number" min="0" step="1" required /></label>
+                            <label>Total rooms<input id="hostelTotalRooms" type="number" min="0" step="1" required /></label>
+                            <label>Rating<input id="hostelRating" type="number" min="0" max="5" step="0.1" required /></label>
+                            <label>Contact<input id="hostelContact" /></label>
+                            <label>Amenities <small>(comma separated)</small><input id="hostelAmenities" /></label>
+                        </div>
+                        <label>Image paths <small>(one path per line)</small><textarea id="hostelImages" rows="3"></textarea></label>
+                        <p class="form-error" id="hostelFormError" role="alert"></p>
+                        <div class="admin-modal-actions"><button type="button" class="btn-secondary" id="cancelHostelEdit">Cancel</button><button type="submit" class="btn-primary" id="saveHostel">Save changes</button></div>
+                    </form>
+                </div>
+            </div>
         </main>
     </div>
     <script src="../js/config.js"></script>
@@ -43,15 +70,104 @@
     <script src="../js/auth.js"></script>
     <script src="../js/main.js"></script>
     <script>
+        let hostels = [];
+
+        const modal = document.getElementById('hostelModal');
+        const form = document.getElementById('hostelForm');
+        const formError = document.getElementById('hostelFormError');
+
+        function closeHostelModal() {
+            modal.hidden = true;
+            formError.textContent = '';
+        }
+
+        function openHostelModal(hostel) {
+            document.getElementById('hostelId').value = hostel.id;
+            document.getElementById('hostelName').value = hostel.name || '';
+            document.getElementById('hostelLocation').value = hostel.location || '';
+            document.getElementById('hostelDescription').value = hostel.description || '';
+            document.getElementById('hostelDistance').value = hostel.distance || '';
+            document.getElementById('hostelGender').value = hostel.gender || 'Mixed';
+            document.getElementById('hostelPrice').value = hostel.price_per_semester ?? hostel.price ?? 0;
+            document.getElementById('hostelRooms').value = hostel.rooms_available ?? 0;
+            document.getElementById('hostelTotalRooms').value = hostel.total_rooms ?? 0;
+            document.getElementById('hostelRating').value = hostel.rating ?? 0;
+            document.getElementById('hostelContact').value = hostel.contact || '';
+            document.getElementById('hostelAmenities').value = (hostel.amenities || []).join(', ');
+            document.getElementById('hostelImages').value = (hostel.images || []).join('\n');
+            modal.hidden = false;
+            document.getElementById('hostelName').focus();
+        }
+
+        function renderHostels() {
+            const tbody = document.getElementById('hostelsTable');
+            tbody.innerHTML = hostels.map(hostel => `
+                <tr>
+                    <td>${hostel.id}</td><td>${hostel.name || ''}</td><td>${hostel.location || ''}</td>
+                    <td>KSh ${hostel.price_per_semester ?? hostel.price ?? 0}</td>
+                    <td>${hostel.rooms_available ?? 0}/${hostel.total_rooms ?? 0}</td>
+                    <td><button type="button" class="btn-sm btn-primary edit-hostel" data-id="${hostel.id}"><i class="fas fa-pen"></i> Edit</button></td>
+                </tr>
+            `).join('');
+            document.querySelectorAll('.edit-hostel').forEach(button => {
+                button.addEventListener('click', () => {
+                    const hostel = hostels.find(item => String(item.id) === button.dataset.id);
+                    if (hostel) openHostelModal(hostel);
+                });
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             const user = await Auth.getCurrentUser();
             if (!user || user.role !== 'admin') { window.location.href = '../login.html'; return; }
-            const hostels = await API.getHostels();
-            const tbody = document.getElementById('hostelsTable');
-            tbody.innerHTML = '';
-            hostels.forEach(h => {
-                tbody.innerHTML += `<tr><td>${h.id}</td><td>${h.name}</td><td>${h.location}</td><td>${h.price_per_semester}</td><td>${h.rooms_available}/${h.total_rooms}</td><td><button class="btn-sm btn-primary">Edit</button></td></tr>`;
-            });
+            try {
+                hostels = await API.getHostels();
+                renderHostels();
+            } catch (error) {
+                document.getElementById('hostelsTable').innerHTML = `<tr><td colspan="6" class="form-error">${error.message}</td></tr>`;
+            }
+        });
+
+        document.getElementById('closeHostelModal').addEventListener('click', closeHostelModal);
+        document.getElementById('cancelHostelEdit').addEventListener('click', closeHostelModal);
+        form.addEventListener('submit', async event => {
+            event.preventDefault();
+            formError.textContent = '';
+            const totalRooms = Number(document.getElementById('hostelTotalRooms').value);
+            const roomsAvailable = Number(document.getElementById('hostelRooms').value);
+            if (roomsAvailable > totalRooms) {
+                formError.textContent = 'Rooms available cannot be greater than total rooms.';
+                return;
+            }
+            const id = document.getElementById('hostelId').value;
+            const data = {
+                name: document.getElementById('hostelName').value.trim(),
+                location: document.getElementById('hostelLocation').value.trim(),
+                description: document.getElementById('hostelDescription').value.trim(),
+                distance: document.getElementById('hostelDistance').value.trim(),
+                gender: document.getElementById('hostelGender').value,
+                price_per_semester: document.getElementById('hostelPrice').value,
+                rooms_available: roomsAvailable,
+                total_rooms: totalRooms,
+                rating: Number(document.getElementById('hostelRating').value),
+                contact: document.getElementById('hostelContact').value.trim(),
+                amenities: document.getElementById('hostelAmenities').value.split(',').map(item => item.trim()).filter(Boolean),
+                images: document.getElementById('hostelImages').value.split('\n').map(item => item.trim()).filter(Boolean),
+            };
+            const saveButton = document.getElementById('saveHostel');
+            saveButton.disabled = true;
+            saveButton.textContent = 'Saving...';
+            try {
+                const updated = await API.updateHostel(id, data);
+                hostels = hostels.map(hostel => String(hostel.id) === String(id) ? updated : hostel);
+                renderHostels();
+                closeHostelModal();
+            } catch (error) {
+                formError.textContent = error.message;
+            } finally {
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save changes';
+            }
         });
     </script>
 </body>

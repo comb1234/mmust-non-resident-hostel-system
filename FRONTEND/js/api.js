@@ -176,6 +176,12 @@ const API = {
         if (!response.ok) throw new Error('Hostel not found');
         return response.json();
     },
+    async updateHostel(id, data) {
+        return this.authFetch(`/hostels/${id}/`, {
+            method: 'PATCH',
+            body: JSON.stringify(data),
+        });
+    },
     // Bookings
     async getBookings() { return this.authFetch('/bookings/'); },
     async getBooking(id) { return this.authFetch(`/bookings/${id}/`); },
@@ -184,6 +190,15 @@ const API = {
     // Payments
     async getPayments() { return this.authFetch('/payments/'); },
     async createPayment(data) { return this.authFetch('/payments/', { method: 'POST', body: JSON.stringify(data) }); },
+    async initiateStkPush(bookingId, phoneNumber = '') {
+        return this.authFetch('/payments/stk-push/', {
+            method: 'POST',
+            body: JSON.stringify({ booking: bookingId, phone_number: phoneNumber }),
+        });
+    },
+    async completeMockStkPayment(paymentId) {
+        return this.authFetch(`/payments/${paymentId}/mock-complete/`, { method: 'POST' });
+    },
     // Complaints
     async getComplaints() { return this.authFetch('/complaints/'); },
     async createComplaint(data) { return this.authFetch('/complaints/', { method: 'POST', body: JSON.stringify(data) }); },

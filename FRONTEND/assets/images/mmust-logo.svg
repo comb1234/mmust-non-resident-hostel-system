@@ -1,12 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <defs>
-    <linearGradient id="g" x1="0" x2="1">
-      <stop offset="0%" stop-color="#003366"/>
-      <stop offset="100%" stop-color="#006699"/>
-    </linearGradient>
-  </defs>
-  <rect width="100%" height="100%" fill="white"/>
-  <circle cx="100" cy="70" r="46" fill="url(#g)"/>
-  <text x="100" y="118" font-family="Arial, Helvetica, sans-serif" font-size="36" fill="#003" font-weight="700" text-anchor="middle">MMUST</text>
-  <text x="100" y="148" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#006" text-anchor="middle">HOSTEL</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title>MMUST Hostels logo</title>
+  <rect width="128" height="128" rx="18" fill="#1a5276"/>
+  <path d="M18 104V52l46-28 46 28v52H18Z" fill="#fff"/>
+  <path d="M30 104V58h12v46H30Zm28 0V58h12v46H58Zm28 0V58h12v46H86Z" fill="#1a5276"/>
+  <path d="M14 52 64 20l50 32-6 9L64 34 20 61l-6-9Z" fill="#f4b942"/>
+  <path d="M48 104V82h32v22H48Z" fill="#f4b942"/>
 </svg>

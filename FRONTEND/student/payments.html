@@ -34,7 +34,7 @@
             <div class="card">
                 <div class="table-container">
                     <table>
-                        <thead><tr><th>Payment ID</th><th>Booking</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+                        <thead><tr><th>Payment ID</th><th>Booking</th><th>Amount</th><th>Method</th><th>Reference</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
                         <tbody id="paymentsTable"></tbody>
                     </table>
                 </div>
@@ -53,7 +53,7 @@
                 const payments = await API.getPayments();
                 const tbody = document.getElementById('paymentsTable');
                 if (payments.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No payments found.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No payments found.</td></tr>';
                 } else {
                     payments.forEach(p => {
                         const statusClass = p.status === 'completed' ? 'badge-success' : p.status === 'pending' ? 'badge-warning' : 'badge-danger';
@@ -62,10 +62,28 @@
                                 <td>${p.id}</td>
                                 <td>${p.booking_details || 'Unknown'}</td>
                                 <td>KSh ${p.amount}</td>
+                                <td>${p.payment_method || 'M-Pesa'}</td>
+                                <td>${p.transaction_id || p.checkout_request_id || '-'}</td>
                                 <td><span class="badge ${statusClass}">${p.status}</span></td>
                                 <td>${new Date(p.created_at).toLocaleDateString()}</td>
+                                <td>${p.status === 'pending' ? `<button type="button" class="btn-sm btn-primary approve-payment" data-id="${p.id}">Approve mock STK</button>` : '-'}</td>
                             </tr>
                         `;
+                    });
+                    document.querySelectorAll('.approve-payment').forEach(button => {
+                        button.addEventListener('click', async () => {
+                            button.disabled = true;
+                            button.textContent = 'Processing...';
+                            try {
+                                const result = await API.completeMockStkPayment(button.dataset.id);
+                                alert(`${result.message}\nTransaction: ${result.payment.transaction_id}`);
+                                window.location.reload();
+                            } catch (error) {
+                                alert('Payment failed: ' + error.message);
+                                button.disabled = false;
+                                button.textContent = 'Approve mock STK';
+                            }
+                        });
                     });
                 }
             } catch (error) {
